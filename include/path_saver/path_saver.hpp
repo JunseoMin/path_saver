@@ -1,5 +1,5 @@
-#ifndef path_saver__PathSaver_HPP_
-#define path_saver__PathSaver_HPP_
+#ifndef PATH_SAVER__PATH_SAVER_HPP_
+#define PATH_SAVER__PATH_SAVER_HPP_
 
 #include "rclcpp/rclcpp.hpp"
 #include "nav_msgs/msg/path.hpp"
@@ -17,4 +17,4 @@ private:
   rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr subs_;
 };
 
-#endif  // path_saver__PathSaver_HPP_
+#endif  // PATH_SAVER__PATH_SAVER_HPP_
