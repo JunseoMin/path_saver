@@ -6,8 +6,8 @@ Path_Generator::Path_Generator()
 : Node("path_generator"), buffer_(this->get_clock()),listener_(buffer_)
 {
   timer_ = this -> create_wall_timer(100ms, std::bind(&Path_Generator::timer_cb,this));
-  file_.open("path/globalpath.csv");
-  file_<<"x,y,z \n";
+  file_.open("/root/path/globalpath_with_rot.csv");
+  file_<<"px,py,pz,ox,oy,oz,ow \n";
 
   RCLCPP_INFO(this->get_logger(), "**** path_generator initalized!! ****");
 }
@@ -15,17 +15,24 @@ Path_Generator::Path_Generator()
 void Path_Generator::timer_cb(){
   try
   {
+
     geometry_msgs::msg::TransformStamped ts;
     ts = buffer_.lookupTransform("map","base_link",tf2::TimePointZero);
     double p_x = ts.transform.translation.x;
     double p_y = ts.transform.translation.y;
     double p_z = ts.transform.translation.z;
+    double o_x = ts.transform.rotation.x;
+    double o_y = ts.transform.rotation.y;
+    double o_z = ts.transform.rotation.z;
+    double o_w = ts.transform.rotation.w;
 
     if (file_.is_open())
     {
-      file_<<p_x << ','<< p_y << ',' << p_z << '\n';
+      file_<<p_x << ','<< p_y << ',' << p_z << ',' << o_x<< ',' << o_y<< ',' << o_z << ',' << o_w << '\n';
     }
-    
+
+    RCLCPP_INFO(this->get_logger(),"path recieved!");
+
   }
   catch(const std::exception& e)
   {
