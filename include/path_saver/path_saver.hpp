@@ -12,9 +12,9 @@ public:
   
 private:
   void path_callback(const nav_msgs::msg::Path::SharedPtr msg);
-  void path_to_csv(const nav_msgs::msg::Path::SharedPtr path);
 
   rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr subs_;
+  std::ofstream file_;
 };
 
 #endif  // PATH_SAVER__PATH_SAVER_HPP_

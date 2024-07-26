@@ -1,29 +1,54 @@
 #include "path_saver/path_saver.hpp"
 
-PathSaver::PathSaver() : Node("path_saver_node")
+PathSaver::PathSaver() 
+: Node("path_saver_node")
 {
   subs_ = this->create_subscription<nav_msgs::msg::Path>(
     "/path",10,std::bind(&PathSaver::path_callback,this,std::placeholders::_1));
+  
+  file_.open("/root/path/globalpath__.csv");  
+  if (!file_.is_open()) {
+    RCLCPP_ERROR(this->get_logger(), "Failed to open file!");
+  } else {
+    RCLCPP_INFO(this->get_logger(), "File opened successfully.");
+  }
 }
 
 void PathSaver::path_callback(const nav_msgs::msg::Path::SharedPtr msg)
 {
-  RCLCPP_INFO(this->get_logger(),"Path Recieved!");
-  PathSaver::path_to_csv(msg);
-}
+  RCLCPP_INFO(this->get_logger(),"Path Received!");
 
-void PathSaver::path_to_csv(const nav_msgs::msg::Path::SharedPtr path)
-{
-  std::ofstream file("path/global_path.csv");
-  file << "x,y,z \n";
+  const auto& pose = msg->poses.back();
+  const double p_x = pose.pose.position.x;
+  const double p_y = pose.pose.position.y;
+  const double p_z = pose.pose.position.z;
+  const double r_x = pose.pose.orientation.x;
+  const double r_y = pose.pose.orientation.y;
+  const double r_z = pose.pose.orientation.z;
+  const double r_w = pose.pose.orientation.w;
 
-  for (const auto& pose : path->poses){
-    const auto& position = pose.pose.position;
+  try
+  {
+    if(file_.is_open()){
+      RCLCPP_INFO(this->get_logger(),"Writing to file...");
+      file_ << p_x << "," << p_y << "," << p_z <<"," 
+            << r_x <<"," << r_y <<"," << r_z <<"," 
+            << r_w << "\n";
+      file_.flush(); // Ensure data is written to the file
 
-    file << position.x << "," << position.y << "," << position.z << "\n";
+      std::cout << p_x << "," << p_y << "," << p_z <<"," 
+                << r_x <<"," << r_y <<"," << r_z <<"," 
+                << r_w << std::endl;
+      RCLCPP_INFO(this->get_logger(),"Path added to file.");
+    } 
+    else {
+      RCLCPP_ERROR(this->get_logger(), "File is not open!");
+    }
   }
-
-  RCLCPP_INFO(this->get_logger(),"Path saved!!");
+  catch(const std::exception& e)
+  {
+    RCLCPP_ERROR(this->get_logger(), "Exception: %s", e.what());
+  } 
 }
 
 int main(int argc, char * argv[])
