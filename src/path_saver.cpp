@@ -4,9 +4,9 @@ PathSaver::PathSaver()
 : Node("path_saver_node")
 {
   subs_ = this->create_subscription<nav_msgs::msg::Path>(
-    "/path",10,std::bind(&PathSaver::path_callback,this,std::placeholders::_1));
+    "/trajectory",10,std::bind(&PathSaver::path_callback,this,std::placeholders::_1));
   
-  file_.open("/root/path/globalpath__.csv");  
+  file_.open("/root/colcon_ws/src/path_saver/path/globalpath_v2.0.csv");  
   if (!file_.is_open()) {
     RCLCPP_ERROR(this->get_logger(), "Failed to open file!");
   } else {

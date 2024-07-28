@@ -4,7 +4,7 @@ Path_Loader::Path_Loader() : Node("Path_Loader")
 {
   publisher_ = this->create_publisher<nav_msgs::msg::Path>("/path", 10);
   timer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&Path_Loader::timer_callback, this));
-  path_ = load_path("/root/path/globalpath__.csv");
+  path_ = load_path("/root/colcon_ws/src/path_saver/path/globalpath_v2.0.csv");
   RCLCPP_INFO(this->get_logger(), "Path loaded");
 }
 
